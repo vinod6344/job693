@@ -130,6 +130,46 @@
     } catch (e) {}
   }
 
+  function getTodayKey() {
+    var d = new Date();
+    var y = d.getFullYear();
+    var m = String(d.getMonth() + 1).padStart(2, '0');
+    var day = String(d.getDate()).padStart(2, '0');
+    return y + '-' + m + '-' + day;
+  }
+
+  function getDigestKey(dateKey) {
+    return 'jobTrackerDigest_' + (dateKey || getTodayKey());
+  }
+
+  function getDigest(dateKey) {
+    try {
+      var raw = localStorage.getItem(getDigestKey(dateKey));
+      if (!raw) return null;
+      return JSON.parse(raw);
+    } catch (e) { return null; }
+  }
+
+  function setDigest(dateKey, items) {
+    try {
+      localStorage.setItem(getDigestKey(dateKey || getTodayKey()), JSON.stringify(items));
+    } catch (e) {}
+  }
+
+  function generateDigestData() {
+    var prefs = getPreferences();
+    if (!prefs) return null;
+    var jobs = getJobs();
+    var list = jobs.map(function (j) {
+      return { job: j, matchScore: computeMatchScore(j, prefs) };
+    });
+    list.sort(function (a, b) {
+      if (b.matchScore !== a.matchScore) return b.matchScore - a.matchScore;
+      return (a.job.postedDaysAgo != null ? a.job.postedDaysAgo : 999) - (b.job.postedDaysAgo != null ? b.job.postedDaysAgo : 999);
+    });
+    return list.slice(0, 10).map(function (x) { return { job: x.job, matchScore: x.matchScore }; });
+  }
+
   function getPath() {
     var hash = window.location.hash.slice(1) || '';
     return (hash === '' || hash === '/') ? '/' : hash.replace(/\/$/, '') || '/';
@@ -489,6 +529,56 @@
     if (getPath() === '/dashboard') updateDashboardJobs();
   }
 
+  function handleDigestGenerate() {
+    var prefs = getPreferences();
+    if (!prefs) return;
+    var todayKey = getTodayKey();
+    if (getDigest(todayKey) != null) {
+      render();
+      return;
+    }
+    var data = generateDigestData();
+    if (!data) return;
+    setDigest(todayKey, data);
+    render();
+  }
+
+  function handleDigestCopy() {
+    var todayKey = getTodayKey();
+    var digest = getDigest(todayKey);
+    if (!digest || digest.length === 0) return;
+    var text = formatDigestAsPlainText(digest);
+    if (!text) return;
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(text).catch(function () { fallbackCopy(text); });
+    } else {
+      fallbackCopy(text);
+    }
+  }
+
+  function fallbackCopy(text) {
+    var ta = document.createElement('textarea');
+    ta.value = text;
+    ta.style.position = 'fixed';
+    ta.style.opacity = '0';
+    document.body.appendChild(ta);
+    ta.select();
+    try { document.execCommand('copy'); } catch (e) {}
+    document.body.removeChild(ta);
+  }
+
+  function handleDigestEmail() {
+    var todayKey = getTodayKey();
+    var digest = getDigest(todayKey);
+    if (!digest || digest.length === 0) return;
+    var body = formatDigestAsPlainText(digest);
+    if (!body) return;
+    var subject = encodeURIComponent('My 9AM Job Digest');
+    var mailtoBody = encodeURIComponent(body);
+    var url = 'mailto:?subject=' + subject + '&body=' + mailtoBody;
+    window.location.href = url;
+  }
+
   function renderSettings() {
     var prefs = getPreferences();
     var roleKeywords = (prefs && prefs.roleKeywords) ? escapeHtml(prefs.roleKeywords) : '';
@@ -556,13 +646,108 @@
     );
   }
 
+  function formatDigestAsPlainText(items) {
+    if (!items || items.length === 0) return '';
+    var today = getTodayKey();
+    var lines = ['Top 10 Jobs For You — 9AM Digest', 'Date: ' + today, ''];
+    items.forEach(function (item, i) {
+      var j = item.job;
+      lines.push((i + 1) + '. ' + (j.title || ''));
+      lines.push('   Company: ' + (j.company || ''));
+      lines.push('   Location: ' + (j.location || '—'));
+      lines.push('   Experience: ' + (j.experience || '—'));
+      lines.push('   Match Score: ' + (item.matchScore != null ? item.matchScore : '—'));
+      if (j.applyUrl) lines.push('   Apply: ' + j.applyUrl);
+      lines.push('');
+    });
+    lines.push('This digest was generated based on your preferences.');
+    return lines.join('\n');
+  }
+
   function renderDigest() {
+    var prefs = getPreferences();
+    var todayKey = getTodayKey();
+    var digest = getDigest(todayKey);
+
+    if (!prefs) {
+      return (
+        '<div class="ds-route__inner">' +
+          '<h1 class="ds-headline">Digest</h1>' +
+          '<div class="ds-digest-block ds-empty" style="margin-top: 24px;">' +
+            '<h2 class="ds-empty__title">Set preferences to generate a personalized digest.</h2>' +
+            '<p class="ds-empty__text">Go to <a href="#/settings" data-link>Settings</a> to configure your role keywords and preferences.</p>' +
+          '</div>' +
+        '</div>'
+      );
+    }
+
+    var genBtn = '<button type="button" id="digest-generate" class="ds-btn ds-btn--primary">Generate Today\'s 9AM Digest (Simulated)</button>';
+    var simNote = '<p class="ds-digest-note">Demo Mode: Daily 9AM trigger simulated manually.</p>';
+
+    if (!digest) {
+      return (
+        '<div class="ds-route__inner">' +
+          '<h1 class="ds-headline">Digest</h1>' +
+          '<div class="ds-digest-wrapper ds-stack-3" style="margin-top: 24px;">' +
+            genBtn +
+            simNote +
+          '</div>' +
+        '</div>'
+      );
+    }
+
+    if (digest.length === 0) {
+      return (
+        '<div class="ds-route__inner">' +
+          '<h1 class="ds-headline">Digest</h1>' +
+          '<div class="ds-digest-wrapper">' +
+          '<div class="ds-digest-card">' +
+            '<h2 class="ds-digest-headline">Top 10 Jobs For You — 9AM Digest</h2>' +
+            '<p class="ds-digest-subtext">' + todayKey + '</p>' +
+            '<div class="ds-empty" style="margin: 24px 0;">' +
+              '<h2 class="ds-empty__title">No matching roles today. Check again tomorrow.</h2>' +
+            '</div>' +
+            '<p class="ds-digest-footer">This digest was generated based on your preferences.</p>' +
+            simNote +
+          '</div>' +
+          '</div>' +
+        '</div>'
+      );
+    }
+
+    var jobBlocks = digest.map(function (item) {
+      var j = item.job;
+      var applyHref = j.applyUrl ? escapeHtml(j.applyUrl) : '#';
+      var matchCls = (item.matchScore || 0) >= 70 ? 'high' : (item.matchScore || 0) >= 40 ? 'medium' : 'neutral';
+      return (
+        '<div class="ds-digest-job">' +
+          '<h3 class="ds-digest-job__title">' + escapeHtml(j.title || '') + '</h3>' +
+          '<p class="ds-digest-job__company">' + escapeHtml(j.company || '') + '</p>' +
+          '<p class="ds-digest-job__meta">' +
+            '<span>Location: ' + escapeHtml(j.location || '—') + '</span>' +
+            '<span>Experience: ' + escapeHtml(j.experience || '—') + '</span>' +
+            '<span class="ds-match-badge ds-match-badge--' + matchCls + '">Match: ' + (item.matchScore != null ? item.matchScore : '—') + '</span>' +
+          '</p>' +
+          '<a href="' + applyHref + '" target="_blank" rel="noopener" class="ds-btn ds-btn--primary ds-digest-job__apply">Apply</a>' +
+        '</div>'
+      );
+    }).join('');
+
     return (
-      '<div class="ds-route__inner">' +
+      '<div class="ds-route__inner ds-digest-route">' +
         '<h1 class="ds-headline">Digest</h1>' +
-        '<div class="ds-empty" style="margin-top: 24px;">' +
-          '<h2 class="ds-empty__title">Daily summary coming next</h2>' +
-          '<p class="ds-empty__text">Your precision-matched job digest will be delivered here. No logic yet.</p>' +
+        '<div class="ds-digest-wrapper">' +
+          '<div class="ds-digest-card">' +
+            '<h2 class="ds-digest-headline">Top 10 Jobs For You — 9AM Digest</h2>' +
+            '<p class="ds-digest-subtext">' + todayKey + '</p>' +
+            '<div class="ds-digest-jobs">' + jobBlocks + '</div>' +
+            '<p class="ds-digest-footer">This digest was generated based on your preferences.</p>' +
+            '<div class="ds-digest-actions">' +
+              '<button type="button" id="digest-copy" class="ds-btn ds-btn--secondary">Copy Digest to Clipboard</button>' +
+              '<button type="button" id="digest-email" class="ds-btn ds-btn--secondary">Create Email Draft</button>' +
+            '</div>' +
+            simNote +
+          '</div>' +
         '</div>' +
       '</div>'
     );
@@ -644,6 +829,14 @@
       var slider = document.getElementById('min-match-score');
       var label = document.getElementById('min-match-value');
       if (slider && label) slider.addEventListener('input', function () { label.textContent = slider.value; });
+    }
+    if (route && route.name === 'digest') {
+      var genBtn = document.getElementById('digest-generate');
+      if (genBtn) genBtn.addEventListener('click', handleDigestGenerate);
+      var copyBtn = document.getElementById('digest-copy');
+      if (copyBtn) copyBtn.addEventListener('click', handleDigestCopy);
+      var emailBtn = document.getElementById('digest-email');
+      if (emailBtn) emailBtn.addEventListener('click', handleDigestEmail);
     }
   }
 
