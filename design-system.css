@@ -803,3 +803,69 @@ body {
   font-weight: 600;
   margin: 0;
 }
+
+/* ========== MATCH BADGE (uses design tokens) ========== */
+.ds-match-badge {
+  display: inline-block;
+  padding: var(--space-1) var(--space-2);
+  font-size: var(--text-size-caption);
+  font-weight: 600;
+  border-radius: var(--radius);
+}
+
+.ds-match-badge--high { color: var(--color-success); border: 1px solid var(--color-success); background: rgba(90, 107, 90, 0.1); }
+.ds-match-badge--medium { color: var(--color-warning); border: 1px solid var(--color-warning); background: rgba(139, 115, 85, 0.1); }
+.ds-match-badge--neutral { color: var(--color-text); border: var(--border); background: var(--color-bg); opacity: 0.9; }
+.ds-match-badge--low { color: var(--color-text); border: var(--border); background: var(--color-bg); opacity: 0.6; }
+
+/* ========== PREFERENCES (checkbox group, multi-select, slider, toggle, banner) ========== */
+.ds-checkbox-group {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+  margin: 0;
+}
+
+.ds-checkbox {
+  display: flex;
+  align-items: center;
+  gap: var(--space-1);
+  font-size: var(--text-size-body);
+  cursor: pointer;
+}
+
+.ds-checkbox input {
+  width: 18px;
+  height: 18px;
+  margin: 0;
+  accent-color: var(--color-accent);
+}
+
+.ds-select[multiple] {
+  min-height: 80px;
+}
+
+.ds-slider {
+  width: 100%;
+  height: 8px;
+  margin: 0;
+  accent-color: var(--color-accent);
+}
+
+.ds-toggle-row {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  margin-bottom: var(--space-3);
+}
+
+.ds-toggle-row .ds-checkbox { margin: 0; }
+
+.ds-banner {
+  padding: var(--space-2) var(--space-3);
+  margin-bottom: var(--space-3);
+  border: var(--border);
+  border-radius: var(--radius);
+  background: rgba(17, 17, 17, 0.04);
+  font-size: var(--text-size-small);
+}
