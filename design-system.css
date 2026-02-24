@@ -553,3 +553,61 @@ body {
 .ds-route--404 .ds-headline {
   color: var(--color-text);
 }
+
+/* ========== LANDING CTA ========== */
+.ds-landing-cta {
+  margin-top: var(--space-4);
+}
+
+/* ========== SETTINGS FORM (PLACEHOLDER UI) ========== */
+.ds-form {
+  max-width: var(--text-max-width);
+}
+
+.ds-field {
+  margin-bottom: var(--space-3);
+}
+
+.ds-field .ds-label {
+  margin-bottom: var(--space-1);
+}
+
+.ds-select {
+  width: 100%;
+  padding: var(--space-2) var(--space-3);
+  font-family: var(--font-sans);
+  font-size: var(--text-size-body);
+  color: var(--color-text);
+  background: var(--color-bg);
+  border: var(--border);
+  border-radius: var(--radius);
+  cursor: pointer;
+  transition: border-color var(--transition);
+}
+
+.ds-select:focus {
+  outline: none;
+  border-color: var(--color-accent);
+}
+
+.ds-radio-group {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+  margin: 0;
+}
+
+.ds-radio {
+  display: flex;
+  align-items: center;
+  gap: var(--space-1);
+  font-size: var(--text-size-body);
+  cursor: pointer;
+}
+
+.ds-radio input {
+  width: 18px;
+  height: 18px;
+  margin: 0;
+  accent-color: var(--color-accent);
+}

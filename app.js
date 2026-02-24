@@ -1,21 +1,19 @@
 /**
- * Job Notification App — Route shell and navigation
- * SPA: no full page reloads. Active link no flicker.
+ * Job Notification Tracker — Premium SaaS app skeleton
+ * Route-specific content. No state, no backend, no logic.
  * Design system: calm, minimal, 180ms ease-in-out.
  */
 
 (function () {
   'use strict';
 
-  var PLACEHOLDER_SUBTEXT = 'This section will be built in the next step.';
-
   var ROUTES = [
-    { path: '/', title: 'Home' },
-    { path: '/dashboard', title: 'Dashboard' },
-    { path: '/saved', title: 'Saved' },
-    { path: '/digest', title: 'Digest' },
-    { path: '/settings', title: 'Settings' },
-    { path: '/proof', title: 'Proof' }
+    { path: '/', name: 'landing' },
+    { path: '/dashboard', name: 'dashboard' },
+    { path: '/saved', name: 'saved' },
+    { path: '/digest', name: 'digest' },
+    { path: '/settings', name: 'settings' },
+    { path: '/proof', name: 'proof' }
   ];
 
   function getPath() {
@@ -30,11 +28,101 @@
     return null;
   }
 
-  function renderPlaceholder(route) {
+  function escapeHtml(s) {
+    var div = document.createElement('div');
+    div.textContent = s;
+    return div.innerHTML;
+  }
+
+  function renderLanding() {
     return (
       '<div class="ds-route__inner">' +
-        '<h1 class="ds-headline">' + escapeHtml(route.title) + '</h1>' +
-        '<p class="ds-subline">' + escapeHtml(PLACEHOLDER_SUBTEXT) + '</p>' +
+        '<h1 class="ds-headline">Stop Missing The Right Jobs.</h1>' +
+        '<p class="ds-subline">Precision-matched job discovery delivered daily at 9AM.</p>' +
+        '<div class="ds-landing-cta">' +
+          '<a href="/settings" class="ds-btn ds-btn--primary" data-link>Start Tracking</a>' +
+        '</div>' +
+      '</div>'
+    );
+  }
+
+  function renderSettings() {
+    return (
+      '<div class="ds-route__inner">' +
+        '<h1 class="ds-headline">Settings</h1>' +
+        '<p class="ds-subline" style="margin-bottom: 24px;">Configure your preferences. No logic yet—UI placeholders only.</p>' +
+        '<form class="ds-form" novalidate>' +
+          '<div class="ds-field">' +
+            '<label class="ds-label" for="role-keywords">Role keywords</label>' +
+            '<input type="text" id="role-keywords" class="ds-input" placeholder="e.g. Frontend, React, Product Manager">' +
+          '</div>' +
+          '<div class="ds-field">' +
+            '<label class="ds-label" for="locations">Preferred locations</label>' +
+            '<input type="text" id="locations" class="ds-input" placeholder="e.g. New York, Remote">' +
+          '</div>' +
+          '<div class="ds-field">' +
+            '<span class="ds-label">Mode</span>' +
+            '<div class="ds-radio-group">' +
+              '<label class="ds-radio"><input type="radio" name="mode" value="remote"> Remote</label>' +
+              '<label class="ds-radio"><input type="radio" name="mode" value="hybrid"> Hybrid</label>' +
+              '<label class="ds-radio"><input type="radio" name="mode" value="onsite"> Onsite</label>' +
+            '</div>' +
+          '</div>' +
+          '<div class="ds-field">' +
+            '<label class="ds-label" for="experience">Experience level</label>' +
+            '<select id="experience" class="ds-select">' +
+              '<option value="">Select level</option>' +
+              '<option value="entry">Entry</option>' +
+              '<option value="mid">Mid</option>' +
+              '<option value="senior">Senior</option>' +
+              '<option value="lead">Lead</option>' +
+            '</select>' +
+          '</div>' +
+        '</form>' +
+      '</div>'
+    );
+  }
+
+  function renderDashboard() {
+    return (
+      '<div class="ds-route__inner">' +
+        '<div class="ds-empty">' +
+          '<h2 class="ds-empty__title">No jobs yet</h2>' +
+          '<p class="ds-empty__text">In the next step, you will load a realistic dataset.</p>' +
+        '</div>' +
+      '</div>'
+    );
+  }
+
+  function renderSaved() {
+    return (
+      '<div class="ds-route__inner">' +
+        '<h1 class="ds-headline">Saved</h1>' +
+        '<div class="ds-empty" style="margin-top: 24px;">' +
+          '<h2 class="ds-empty__title">Nothing saved yet</h2>' +
+          '<p class="ds-empty__text">Jobs you save will appear here. No data yet.</p>' +
+        '</div>' +
+      '</div>'
+    );
+  }
+
+  function renderDigest() {
+    return (
+      '<div class="ds-route__inner">' +
+        '<h1 class="ds-headline">Digest</h1>' +
+        '<div class="ds-empty" style="margin-top: 24px;">' +
+          '<h2 class="ds-empty__title">Daily summary coming next</h2>' +
+          '<p class="ds-empty__text">Your precision-matched job digest will be delivered here. No logic yet.</p>' +
+        '</div>' +
+      '</div>'
+    );
+  }
+
+  function renderProof() {
+    return (
+      '<div class="ds-route__inner">' +
+        '<h1 class="ds-headline">Proof</h1>' +
+        '<p class="ds-subline">Placeholder for artifact collection. This section will be built in the next step.</p>' +
       '</div>'
     );
   }
@@ -48,10 +136,16 @@
     );
   }
 
-  function escapeHtml(s) {
-    var div = document.createElement('div');
-    div.textContent = s;
-    return div.innerHTML;
+  function renderRoute(route) {
+    switch (route.name) {
+      case 'landing': return renderLanding();
+      case 'settings': return renderSettings();
+      case 'dashboard': return renderDashboard();
+      case 'saved': return renderSaved();
+      case 'digest': return renderDigest();
+      case 'proof': return renderProof();
+      default: return render404();
+    }
   }
 
   function setActiveLink(path) {
@@ -75,7 +169,7 @@
     if (!app) return;
 
     if (route) {
-      app.innerHTML = renderPlaceholder(route);
+      app.innerHTML = renderRoute(route);
     } else {
       app.innerHTML = render404();
     }
@@ -84,19 +178,24 @@
     closeNavDropdown();
   }
 
-  function handleClick(e) {
-    var a = e.target.closest('a[data-link]');
-    if (!a || a.target === '_blank' || a.hasAttribute('download')) return;
-    var href = a.getAttribute('href');
-    if (!href || href.indexOf('://') !== -1) return;
-
-    e.preventDefault();
+  function navigate(href) {
     var path = href === '/' ? '/' : href.replace(/\/$/, '');
     var currentPath = getPath();
     if (path === currentPath) return;
-
     window.history.pushState({}, '', href);
     render();
+  }
+
+  function handleClick(e) {
+    var a = e.target.closest('a[data-link]');
+    if (a && a.target !== '_blank' && !a.hasAttribute('download')) {
+      var href = a.getAttribute('href');
+      if (href && href.indexOf('://') === -1) {
+        e.preventDefault();
+        navigate(href);
+        return;
+      }
+    }
   }
 
   function closeNavDropdown() {
