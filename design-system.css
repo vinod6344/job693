@@ -1,0 +1,408 @@
+/**
+ * Job Notification App — Design System
+ * Premium SaaS foundation. Calm, intentional, coherent.
+ * No gradients, glassmorphism, neon, or animation noise.
+ */
+
+/* ========== DESIGN TOKENS ========== */
+:root {
+  /* Colors — maximum 4 in use */
+  --color-bg: #F7F6F3;
+  --color-text: #111111;
+  --color-accent: #8B0000;
+  --color-success: #5a6b5a;
+  --color-warning: #8b7355;
+
+  /* Typography */
+  --font-serif: "Georgia", "Times New Roman", serif;
+  --font-sans: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  --text-size-body: 17px;
+  --text-size-small: 14px;
+  --text-size-caption: 12px;
+  --line-height-body: 1.65;
+  --line-height-heading: 1.35;
+  --text-max-width: 720px;
+
+  /* Spacing scale — only these values */
+  --space-1: 8px;
+  --space-2: 16px;
+  --space-3: 24px;
+  --space-4: 40px;
+  --space-5: 64px;
+
+  /* Layout */
+  --radius: 6px;
+  --transition: 180ms ease-in-out;
+  --border: 1px solid rgba(17, 17, 17, 0.12);
+  --border-focus: 1px solid var(--color-accent);
+}
+
+/* ========== RESET & BASE ========== */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  font-size: 100%;
+  -webkit-font-smoothing: antialiased;
+}
+
+body {
+  margin: 0;
+  background: var(--color-bg);
+  color: var(--color-text);
+  font-family: var(--font-sans);
+  font-size: var(--text-size-body);
+  line-height: var(--line-height-body);
+  min-height: 100vh;
+}
+
+/* ========== TYPOGRAPHY ========== */
+.ds-headline {
+  font-family: var(--font-serif);
+  font-size: clamp(1.75rem, 4vw, 2.25rem);
+  line-height: var(--line-height-heading);
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  margin: 0 0 var(--space-2) 0;
+  max-width: var(--text-max-width);
+}
+
+.ds-subline {
+  font-size: var(--text-size-body);
+  color: var(--color-text);
+  opacity: 0.85;
+  margin: 0;
+  max-width: var(--text-max-width);
+}
+
+.ds-body {
+  max-width: var(--text-max-width);
+  margin: 0 0 var(--space-2) 0;
+}
+
+.ds-caption {
+  font-size: var(--text-size-caption);
+  color: var(--color-text);
+  opacity: 0.7;
+  margin: 0;
+}
+
+/* ========== LAYOUT STRUCTURE ========== */
+.ds-page {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+.ds-top-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--space-2) var(--space-4);
+  border-bottom: var(--border);
+  background: var(--color-bg);
+}
+
+.ds-top-bar__brand {
+  font-family: var(--font-serif);
+  font-size: 1.125rem;
+  font-weight: 600;
+  color: var(--color-text);
+}
+
+.ds-top-bar__progress {
+  font-size: var(--text-size-small);
+  color: var(--color-text);
+  opacity: 0.8;
+}
+
+.ds-top-bar__status {
+  font-size: var(--text-size-small);
+  padding: var(--space-1) var(--space-2);
+  border: var(--border);
+  border-radius: var(--radius);
+  background: var(--color-bg);
+}
+
+.ds-context-header {
+  padding: var(--space-4) var(--space-4) var(--space-3);
+  border-bottom: var(--border);
+}
+
+.ds-workspace {
+  display: flex;
+  flex: 1;
+  min-height: 0;
+}
+
+.ds-primary {
+  flex: 0 1 70%;
+  padding: var(--space-4);
+  overflow: auto;
+}
+
+.ds-secondary {
+  flex: 0 0 30%;
+  min-width: 280px;
+  padding: var(--space-4);
+  border-left: var(--border);
+  background: var(--color-bg);
+  overflow: auto;
+}
+
+.ds-proof-footer {
+  padding: var(--space-3) var(--space-4);
+  border-top: var(--border);
+  background: var(--color-bg);
+}
+
+/* ========== COMPONENTS ========== */
+.ds-card {
+  background: var(--color-bg);
+  border: var(--border);
+  border-radius: var(--radius);
+  padding: var(--space-3);
+  margin-bottom: var(--space-3);
+}
+
+.ds-card:last-child {
+  margin-bottom: 0;
+}
+
+/* Buttons */
+.ds-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--space-2) var(--space-3);
+  font-family: var(--font-sans);
+  font-size: var(--text-size-body);
+  font-weight: 500;
+  border-radius: var(--radius);
+  border: 1px solid transparent;
+  cursor: pointer;
+  transition: background-color var(--transition), border-color var(--transition), color var(--transition);
+}
+
+.ds-btn--primary {
+  background: var(--color-accent);
+  color: #fff;
+  border-color: var(--color-accent);
+}
+
+.ds-btn--primary:hover {
+  background: #6d0000;
+  border-color: #6d0000;
+}
+
+.ds-btn--secondary {
+  background: transparent;
+  color: var(--color-text);
+  border: var(--border);
+}
+
+.ds-btn--secondary:hover {
+  border-color: rgba(17, 17, 17, 0.25);
+  background: rgba(17, 17, 17, 0.04);
+}
+
+.ds-btn + .ds-btn {
+  margin-left: var(--space-2);
+}
+
+/* Inputs */
+.ds-input {
+  width: 100%;
+  padding: var(--space-2) var(--space-3);
+  font-family: var(--font-sans);
+  font-size: var(--text-size-body);
+  line-height: 1.5;
+  color: var(--color-text);
+  background: var(--color-bg);
+  border: var(--border);
+  border-radius: var(--radius);
+  transition: border-color var(--transition);
+}
+
+.ds-input::placeholder {
+  color: var(--color-text);
+  opacity: 0.5;
+}
+
+.ds-input:focus {
+  outline: none;
+  border-color: var(--color-accent);
+}
+
+.ds-label {
+  display: block;
+  font-size: var(--text-size-small);
+  font-weight: 500;
+  margin-bottom: var(--space-1);
+}
+
+/* Copyable prompt box */
+.ds-prompt-box {
+  position: relative;
+  padding: var(--space-2) var(--space-3);
+  background: rgba(17, 17, 17, 0.04);
+  border: var(--border);
+  border-radius: var(--radius);
+  font-family: monospace;
+  font-size: var(--text-size-small);
+  line-height: 1.6;
+  word-break: break-all;
+}
+
+.ds-prompt-box__copy {
+  position: absolute;
+  top: var(--space-2);
+  right: var(--space-2);
+}
+
+/* Checklist / Proof footer items */
+.ds-checklist {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2) var(--space-4);
+}
+
+.ds-checklist__item {
+  display: flex;
+  align-items: center;
+  gap: var(--space-1);
+  font-size: var(--text-size-small);
+  color: var(--color-text);
+  opacity: 0.85;
+}
+
+.ds-checklist__item[data-done="true"] {
+  opacity: 1;
+}
+
+.ds-checklist__item [data-check] {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 18px;
+  height: 18px;
+  border: var(--border);
+  border-radius: 3px;
+  flex-shrink: 0;
+  font-size: 12px;
+  transition: border-color var(--transition), background var(--transition), color var(--transition);
+}
+
+.ds-checklist__item [data-check]::before {
+  content: "□";
+}
+
+.ds-checklist__item[data-done="true"] [data-check]::before {
+  content: "✓";
+}
+
+.ds-checklist__item[data-done="true"] [data-check] {
+  border-color: var(--color-success);
+  background: var(--color-success);
+  color: var(--color-bg);
+}
+
+/* Status badges */
+.ds-badge {
+  display: inline-block;
+  padding: var(--space-1) var(--space-2);
+  font-size: var(--text-size-caption);
+  font-weight: 500;
+  border-radius: var(--radius);
+  border: var(--border);
+}
+
+.ds-badge--not-started {
+  opacity: 0.7;
+}
+
+.ds-badge--in-progress {
+  border-color: var(--color-warning);
+  color: var(--color-warning);
+}
+
+.ds-badge--shipped {
+  border-color: var(--color-success);
+  color: var(--color-success);
+}
+
+/* Error state */
+.ds-error {
+  padding: var(--space-3);
+  border: 1px solid rgba(139, 0, 0, 0.25);
+  border-radius: var(--radius);
+  background: rgba(139, 0, 0, 0.06);
+}
+
+.ds-error__title {
+  font-weight: 600;
+  margin: 0 0 var(--space-1) 0;
+  color: var(--color-accent);
+}
+
+.ds-error__message {
+  margin: 0 0 var(--space-2) 0;
+  font-size: var(--text-size-body);
+}
+
+.ds-error__action {
+  margin: 0;
+  font-size: var(--text-size-small);
+  opacity: 0.9;
+}
+
+/* Empty state */
+.ds-empty {
+  padding: var(--space-5) var(--space-4);
+  text-align: center;
+  border: var(--border);
+  border-radius: var(--radius);
+  background: var(--color-bg);
+}
+
+.ds-empty__title {
+  font-family: var(--font-serif);
+  font-size: 1.25rem;
+  font-weight: 600;
+  margin: 0 0 var(--space-2) 0;
+}
+
+.ds-empty__text {
+  margin: 0 0 var(--space-3) 0;
+  max-width: var(--text-max-width);
+  margin-left: auto;
+  margin-right: auto;
+}
+
+/* Secondary panel step explanation */
+.ds-step-title {
+  font-size: var(--text-size-small);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  margin: 0 0 var(--space-2) 0;
+  opacity: 0.8;
+}
+
+.ds-step-body {
+  font-size: var(--text-size-body);
+  margin: 0 0 var(--space-3) 0;
+  line-height: var(--line-height-body);
+}
+
+/* Utility: ensure no random spacing in layout */
+.ds-stack-1 > * + * { margin-top: var(--space-1); }
+.ds-stack-2 > * + * { margin-top: var(--space-2); }
+.ds-stack-3 > * + * { margin-top: var(--space-3); }
+.ds-stack-4 > * + * { margin-top: var(--space-4); }
