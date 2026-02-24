@@ -965,3 +965,132 @@ body {
   opacity: 0.65;
   margin: 0;
 }
+
+/* ========== JOB STATUS (CARD CONTROLS) ========== */
+.ds-status-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 6px 10px;
+  font-size: var(--text-size-caption);
+  font-weight: 600;
+  border-radius: 999px;
+  border: 1px solid rgba(17, 17, 17, 0.14);
+  background: #fff;
+  white-space: nowrap;
+}
+
+.ds-status-badge--neutral { opacity: 0.75; }
+.ds-status-badge--applied { border-color: rgba(21, 79, 140, 0.35); color: #154F8C; background: rgba(21, 79, 140, 0.06); }
+.ds-status-badge--rejected { border-color: rgba(139, 0, 0, 0.35); color: var(--color-accent); background: rgba(139, 0, 0, 0.06); }
+.ds-status-badge--selected { border-color: rgba(90, 107, 90, 0.35); color: var(--color-success); background: rgba(90, 107, 90, 0.08); }
+
+.ds-status-group {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-left: var(--space-2);
+}
+
+.ds-status-btn {
+  padding: 8px 10px;
+  border-radius: 999px;
+  border: var(--border);
+  background: var(--color-bg);
+  color: var(--color-text);
+  font-size: var(--text-size-small);
+  cursor: pointer;
+  transition: background-color var(--transition), border-color var(--transition), color var(--transition);
+}
+
+.ds-status-btn:hover {
+  background: rgba(17, 17, 17, 0.04);
+  border-color: rgba(17, 17, 17, 0.22);
+}
+
+.ds-status-btn.is-active {
+  border-color: rgba(17, 17, 17, 0.32);
+  background: #fff;
+}
+
+/* ========== TOAST (NON-BLOCKING) ========== */
+.ds-toast-host {
+  position: fixed;
+  right: var(--space-4);
+  bottom: var(--space-4);
+  z-index: 1100;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+  pointer-events: none;
+}
+
+.ds-toast {
+  pointer-events: none;
+  background: #fff;
+  border: var(--border);
+  border-radius: var(--radius);
+  padding: var(--space-2) var(--space-3);
+  font-size: var(--text-size-small);
+  box-shadow: 0 6px 24px rgba(17, 17, 17, 0.12);
+  opacity: 0;
+  transform: translateY(6px);
+  transition: opacity var(--transition), transform var(--transition);
+}
+
+.ds-toast.is-visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* ========== DIGEST: RECENT STATUS UPDATES ========== */
+.ds-digest-updates {
+  max-width: 720px;
+  margin: var(--space-4) auto 0;
+  padding: var(--space-3) var(--space-4);
+  background: rgba(17, 17, 17, 0.02);
+  border: var(--border);
+  border-radius: var(--radius);
+}
+
+.ds-digest-updates__title {
+  font-family: var(--font-serif);
+  font-size: 1.125rem;
+  font-weight: 600;
+  margin: 0 0 var(--space-2) 0;
+}
+
+.ds-digest-updates__list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.ds-update-row {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--space-3);
+  padding: var(--space-2) 0;
+  border-top: var(--border);
+}
+
+.ds-update-row:first-child { border-top: none; padding-top: 0; }
+
+.ds-update-row__title {
+  font-weight: 600;
+  font-size: var(--text-size-small);
+  margin: 0 0 4px 0;
+}
+
+.ds-update-row__meta {
+  font-size: var(--text-size-caption);
+  opacity: 0.75;
+}
+
+.ds-update-row__status { flex-shrink: 0; }
+
+@media (max-width: 768px) {
+  .ds-toast-host { right: var(--space-2); left: var(--space-2); bottom: var(--space-2); }
+  .ds-toast { width: 100%; }
+}

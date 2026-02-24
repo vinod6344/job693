@@ -8,6 +8,9 @@
 
   var STORAGE_KEY = 'jobTrackerSaved';
   var PREFERENCES_KEY = 'jobTrackerPreferences';
+  var STATUS_KEY = 'jobTrackerStatus';
+  var STATUS_UPDATES_KEY = 'jobTrackerStatusUpdates';
+  var STATUS_VALUES = ['Not Applied', 'Applied', 'Rejected', 'Selected'];
   var JOBS_DATA = window.JOBS_DATA || [
     { id: "j1", title: "SDE Intern", company: "Amazon", location: "Bangalore", mode: "Hybrid", experience: "Fresher", skills: ["Java", "Data Structures", "Algorithms"], source: "LinkedIn", postedDaysAgo: 1, salaryRange: "₹40k–₹60k/month Internship", applyUrl: "https://www.linkedin.com/jobs/view/1", description: "Work on real-world projects alongside senior engineers. You will contribute to services used by millions of customers. Strong problem-solving and communication skills required." },
     { id: "j2", title: "Graduate Engineer Trainee", company: "TCS", location: "Chennai", mode: "Onsite", experience: "0-1", skills: ["Java", "SQL", "Spring Boot"], source: "Naukri", postedDaysAgo: 3, salaryRange: "3–5 LPA", applyUrl: "https://www.naukri.com/job/2", description: "GET program for fresh graduates. Training on core technologies and client projects. Opportunities across multiple units and locations in India." },
@@ -130,6 +133,74 @@
     } catch (e) {}
   }
 
+  function getStatusMap() {
+    try {
+      var raw = localStorage.getItem(STATUS_KEY);
+      if (!raw) return {};
+      var obj = JSON.parse(raw);
+      return obj && typeof obj === 'object' ? obj : {};
+    } catch (e) { return {}; }
+  }
+
+  function setStatusMap(map) {
+    try {
+      localStorage.setItem(STATUS_KEY, JSON.stringify(map || {}));
+    } catch (e) {}
+  }
+
+  function getJobStatus(jobId) {
+    if (!jobId) return 'Not Applied';
+    var map = getStatusMap();
+    var s = map[jobId];
+    return STATUS_VALUES.indexOf(s) >= 0 ? s : 'Not Applied';
+  }
+
+  function getStatusBadgeClass(status) {
+    if (status === 'Applied') return 'ds-status-badge ds-status-badge--applied';
+    if (status === 'Rejected') return 'ds-status-badge ds-status-badge--rejected';
+    if (status === 'Selected') return 'ds-status-badge ds-status-badge--selected';
+    return 'ds-status-badge ds-status-badge--neutral';
+  }
+
+  function getStatusUpdates() {
+    try {
+      var raw = localStorage.getItem(STATUS_UPDATES_KEY);
+      if (!raw) return [];
+      var arr = JSON.parse(raw);
+      return Array.isArray(arr) ? arr : [];
+    } catch (e) { return []; }
+  }
+
+  function setStatusUpdates(arr) {
+    try {
+      localStorage.setItem(STATUS_UPDATES_KEY, JSON.stringify(Array.isArray(arr) ? arr : []));
+    } catch (e) {}
+  }
+
+  function recordStatusUpdate(job, status) {
+    try {
+      var updates = getStatusUpdates();
+      updates.unshift({
+        jobId: job && job.id ? String(job.id) : '',
+        title: job && job.title ? String(job.title) : '',
+        company: job && job.company ? String(job.company) : '',
+        status: status,
+        changedAt: new Date().toISOString()
+      });
+      if (updates.length > 50) updates = updates.slice(0, 50);
+      setStatusUpdates(updates);
+    } catch (e) {}
+  }
+
+  function setJobStatus(job, status) {
+    if (!job || !job.id) return;
+    if (STATUS_VALUES.indexOf(status) < 0) status = 'Not Applied';
+    var map = getStatusMap();
+    map[job.id] = status;
+    setStatusMap(map);
+    recordStatusUpdate(job, status);
+  }
+
   function getTodayKey() {
     var d = new Date();
     var y = d.getFullYear();
@@ -234,6 +305,7 @@
     var mode = document.getElementById('filter-mode');
     var exp = document.getElementById('filter-experience');
     var src = document.getElementById('filter-source');
+    var status = document.getElementById('filter-status');
     var sort = document.getElementById('filter-sort');
     var showMatches = document.getElementById('filter-show-matches');
     return {
@@ -242,6 +314,7 @@
       mode: mode ? mode.value : '',
       experience: exp ? exp.value : '',
       source: src ? src.value : '',
+      status: status ? status.value : '',
       sort: sort ? sort.value : 'latest',
       showMatchesOnly: showMatches ? showMatches.checked : false
     };
@@ -266,6 +339,7 @@
       if (filter.mode && j.mode !== filter.mode) return false;
       if (filter.experience && j.experience !== filter.experience) return false;
       if (filter.source && j.source !== filter.source) return false;
+      if (filter.status && getJobStatus(j.id) !== filter.status) return false;
       if (filter.showMatchesOnly && x.matchScore < minMatchScore) return false;
       return true;
     });
@@ -301,6 +375,12 @@
     var saveDisabled = options.savedPage ? '' : (saved ? ' disabled' : '');
     var matchScore = options.matchScore != null ? options.matchScore : 0;
     var badgeHtml = (options.showMatch === true && matchScore >= 0) ? '<span class="' + getMatchBadgeClass(matchScore) + '">' + escapeHtml(matchScore) + '% match</span>' : '';
+    var status = getJobStatus(job.id);
+    var statusBadge = '<span class="' + getStatusBadgeClass(status) + '">' + escapeHtml(status) + '</span>';
+    var statusButtons = STATUS_VALUES.map(function (s) {
+      var active = s === status;
+      return '<button type="button" class="ds-status-btn' + (active ? ' is-active' : '') + '" data-action="set-status" data-job-id="' + escapeHtml(job.id) + '" data-status="' + escapeHtml(s) + '" aria-pressed="' + (active ? 'true' : 'false') + '">' + escapeHtml(s) + '</button>';
+    }).join('');
     return (
       '<div class="ds-job-card" data-job-id="' + escapeHtml(job.id) + '">' +
         '<div style="display:flex;justify-content:space-between;align-items:flex-start;gap:16px;">' +
@@ -308,7 +388,10 @@
             '<h3 class="ds-job-card__title">' + escapeHtml(job.title) + '</h3>' +
             '<p class="ds-job-card__company">' + escapeHtml(job.company) + '</p>' +
           '</div>' +
-          (badgeHtml ? '<div>' + badgeHtml + '</div>' : '') +
+          '<div style="display:flex;flex-direction:column;align-items:flex-end;gap:8px;">' +
+            (badgeHtml ? badgeHtml : '') +
+            statusBadge +
+          '</div>' +
         '</div>' +
         '<div class="ds-job-card__meta">' +
           '<span>' + escapeHtml(job.location) + '</span>' +
@@ -321,6 +404,7 @@
         '<div class="ds-job-card__footer">' +
           '<span class="ds-job-card__source">' + escapeHtml(job.source || '') + '</span>' +
           '<span class="ds-job-card__posted">' + postedText(job.postedDaysAgo) + '</span>' +
+          '<div class="ds-status-group" role="group" aria-label="Application status">' + statusButtons + '</div>' +
           '<div class="ds-job-card__actions">' +
             '<button type="button" class="ds-btn ds-btn--secondary" data-action="view" data-job-id="' + escapeHtml(job.id) + '">View</button>' +
             (options.savedPage
@@ -363,6 +447,16 @@
           '<label class="ds-label" for="filter-source">Source</label>' +
           '<select id="filter-source" class="ds-select"><option value="">All</option>' +
           uniqueSources.map(function (s) { return '<option value="' + escapeHtml(s) + '">' + escapeHtml(s) + '</option>'; }).join('') +
+          '</select>' +
+        '</div>' +
+        '<div class="ds-filter__group">' +
+          '<label class="ds-label" for="filter-status">Status</label>' +
+          '<select id="filter-status" class="ds-select">' +
+            '<option value=\"\">All</option>' +
+            '<option value=\"Not Applied\">Not Applied</option>' +
+            '<option value=\"Applied\">Applied</option>' +
+            '<option value=\"Rejected\">Rejected</option>' +
+            '<option value=\"Selected\">Selected</option>' +
           '</select>' +
         '</div>' +
         '<div class="ds-filter__group">' +
@@ -461,6 +555,33 @@
   function closeModal() {
     var el = document.getElementById('job-modal');
     if (el && el.parentNode) el.parentNode.removeChild(el);
+  }
+
+  function ensureToastHost() {
+    var host = document.getElementById('ds-toast-host');
+    if (host) return host;
+    host = document.createElement('div');
+    host.id = 'ds-toast-host';
+    host.className = 'ds-toast-host';
+    document.body.appendChild(host);
+    return host;
+  }
+
+  function showToast(message) {
+    if (!message) return;
+    var host = ensureToastHost();
+    var el = document.createElement('div');
+    el.className = 'ds-toast';
+    el.setAttribute('role', 'status');
+    el.textContent = message;
+    host.appendChild(el);
+    setTimeout(function () { el.classList.add('is-visible'); }, 10);
+    setTimeout(function () {
+      el.classList.remove('is-visible');
+      setTimeout(function () {
+        if (el && el.parentNode) el.parentNode.removeChild(el);
+      }, 220);
+    }, 2400);
   }
 
   function renderSaved() {
@@ -664,10 +785,47 @@
     return lines.join('\n');
   }
 
+  function formatChangedAt(iso) {
+    try {
+      var d = new Date(iso);
+      if (isNaN(d.getTime())) return '';
+      return d.toLocaleDateString(undefined, { year: 'numeric', month: 'short', day: 'numeric' });
+    } catch (e) { return ''; }
+  }
+
+  function renderRecentStatusUpdatesSection() {
+    var updates = getStatusUpdates();
+    var rows = updates.slice(0, 10).map(function (u) {
+      var status = STATUS_VALUES.indexOf(u.status) >= 0 ? u.status : 'Not Applied';
+      var dateText = formatChangedAt(u.changedAt) || '';
+      return (
+        '<div class="ds-update-row">' +
+          '<div class="ds-update-row__main">' +
+            '<div class="ds-update-row__title">' + escapeHtml(u.title || '—') + '</div>' +
+            '<div class="ds-update-row__meta">' + escapeHtml(u.company || '') + (dateText ? ' · ' + escapeHtml(dateText) : '') + '</div>' +
+          '</div>' +
+          '<div class="ds-update-row__status"><span class="' + getStatusBadgeClass(status) + '">' + escapeHtml(status) + '</span></div>' +
+        '</div>'
+      );
+    }).join('');
+
+    if (!rows) {
+      rows = '<p class="ds-caption" style="margin:0;">No status updates yet.</p>';
+    }
+
+    return (
+      '<div class="ds-digest-updates">' +
+        '<h2 class="ds-digest-updates__title">Recent Status Updates</h2>' +
+        '<div class="ds-digest-updates__list">' + rows + '</div>' +
+      '</div>'
+    );
+  }
+
   function renderDigest() {
     var prefs = getPreferences();
     var todayKey = getTodayKey();
     var digest = getDigest(todayKey);
+    var updatesSection = renderRecentStatusUpdatesSection();
 
     if (!prefs) {
       return (
@@ -677,6 +835,7 @@
             '<h2 class="ds-empty__title">Set preferences to generate a personalized digest.</h2>' +
             '<p class="ds-empty__text">Go to <a href="#/settings" data-link>Settings</a> to configure your role keywords and preferences.</p>' +
           '</div>' +
+          updatesSection +
         '</div>'
       );
     }
@@ -692,6 +851,7 @@
             genBtn +
             simNote +
           '</div>' +
+          updatesSection +
         '</div>'
       );
     }
@@ -711,6 +871,7 @@
             simNote +
           '</div>' +
           '</div>' +
+          updatesSection +
         '</div>'
       );
     }
@@ -749,6 +910,7 @@
             simNote +
           '</div>' +
         '</div>' +
+        updatesSection +
       '</div>'
     );
   }
@@ -816,7 +978,7 @@
     if (route && route.name === 'dashboard') {
       updateDashboardJobs();
       var keyword = document.getElementById('filter-keyword');
-      var selects = document.querySelectorAll('#filter-location, #filter-mode, #filter-experience, #filter-source, #filter-sort');
+      var selects = document.querySelectorAll('#filter-location, #filter-mode, #filter-experience, #filter-source, #filter-status, #filter-sort');
       var showMatches = document.getElementById('filter-show-matches');
       function onFilterChange() { updateDashboardJobs(); }
       if (keyword) keyword.addEventListener('input', onFilterChange);
@@ -867,6 +1029,26 @@
       var jobs = getJobs();
       var job = jobs.find(function (j) { return j.id === jobId; });
       if (job) openModal(job);
+      return;
+    }
+
+    var statusBtn = e.target.closest('button[data-action="set-status"]');
+    if (statusBtn) {
+      e.preventDefault();
+      e.stopPropagation();
+      var jobId = statusBtn.getAttribute('data-job-id');
+      var status = statusBtn.getAttribute('data-status');
+      var jobs = getJobs();
+      var job = jobs.find(function (j) { return j.id === jobId; });
+      if (job) {
+        setJobStatus(job, status);
+        if (status === 'Applied' || status === 'Rejected' || status === 'Selected') {
+          showToast('Status updated: ' + status);
+        }
+        if (getPath() === '/dashboard') updateDashboardJobs();
+        if (getPath() === '/saved') render();
+        if (getPath() === '/digest') render();
+      }
       return;
     }
 
