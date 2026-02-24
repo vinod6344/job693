@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Job Notification App — Design System</title>
+  <title>Job Notification App</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
@@ -11,101 +11,35 @@
 </head>
 <body>
   <div class="ds-page">
-    <!-- TOP BAR -->
-    <header class="ds-top-bar">
-      <span class="ds-top-bar__brand">Job Notification App</span>
-      <span class="ds-top-bar__progress">Step 2 / 4</span>
-      <span class="ds-top-bar__status ds-badge ds-badge--in-progress">In Progress</span>
-    </header>
+    <nav class="ds-nav" aria-label="Main">
+      <a href="/" class="ds-nav__brand" data-link>Job Notification App</a>
 
-    <!-- CONTEXT HEADER -->
-    <section class="ds-context-header">
-      <h1 class="ds-headline">Design system foundation</h1>
-      <p class="ds-subline">Layout, typography, and components. No product features yet.</p>
-    </section>
-
-    <!-- WORKSPACE: PRIMARY (70%) + SECONDARY (30%) -->
-    <main class="ds-workspace">
-      <div class="ds-primary">
-        <div class="ds-card">
-          <h2 class="ds-headline" style="font-size: 1.5rem; margin-bottom: 16px;">Primary workspace</h2>
-          <p class="ds-body">Clean cards, predictable components, subtle borders. No crowding, no heavy shadows.</p>
-        </div>
-
-        <div class="ds-card">
-          <h3 style="font-family: var(--font-serif); font-size: 1.25rem; margin: 0 0 16px 0;">Buttons</h3>
-          <div style="margin-bottom: 16px;">
-            <button type="button" class="ds-btn ds-btn--primary">Primary action</button>
-            <button type="button" class="ds-btn ds-btn--secondary">Secondary</button>
-          </div>
-          <p class="ds-caption">Primary: solid deep red. Secondary: outlined. Same radius, 180ms ease-in-out.</p>
-        </div>
-
-        <div class="ds-card">
-          <h3 style="font-family: var(--font-serif); font-size: 1.25rem; margin: 0 0 16px 0;">Input</h3>
-          <label class="ds-label" for="demo-input">Label</label>
-          <input type="text" id="demo-input" class="ds-input" placeholder="Clean border, clear focus state">
-        </div>
-
-        <div class="ds-card">
-          <h3 style="font-family: var(--font-serif); font-size: 1.25rem; margin: 0 0 16px 0;">Error state</h3>
-          <div class="ds-error">
-            <p class="ds-error__title">Something went wrong</p>
-            <p class="ds-error__message">The request could not be completed. Check your connection and try again.</p>
-            <p class="ds-error__action">Retry in a few seconds, or contact support if it continues.</p>
-          </div>
-        </div>
-
-        <div class="ds-card">
-          <h3 style="font-family: var(--font-serif); font-size: 1.25rem; margin: 0 0 16px 0;">Empty state</h3>
-          <div class="ds-empty">
-            <p class="ds-empty__title">No items yet</p>
-            <p class="ds-empty__text">Add your first item to get started. Use the button below.</p>
-            <button type="button" class="ds-btn ds-btn--primary">Add first item</button>
-          </div>
-        </div>
-      </div>
-
-      <aside class="ds-secondary">
-        <p class="ds-step-title">Step explanation</p>
-        <p class="ds-step-body">This panel holds step-specific guidance and copyable prompts. Buttons stay consistent with the rest of the system.</p>
-
-        <p class="ds-label" style="margin-bottom: 8px;">Copyable prompt</p>
-        <div class="ds-prompt-box">
-          <button type="button" class="ds-btn ds-btn--secondary ds-prompt-box__copy" data-copy-target="prompt-text" aria-label="Copy">Copy</button>
-          <span id="prompt-text">npm install job-notification-app</span>
-        </div>
-
-        <div style="margin-top: 24px;">
-          <button type="button" class="ds-btn ds-btn--primary">Continue</button>
-          <button type="button" class="ds-btn ds-btn--secondary">Back</button>
-        </div>
-      </aside>
-    </main>
-
-    <!-- PROOF FOOTER -->
-    <footer class="ds-proof-footer">
-      <ul class="ds-checklist" role="list">
-        <li class="ds-checklist__item" data-done="false">
-          <span data-check aria-hidden="true"></span>
-          <span>UI Built</span>
-        </li>
-        <li class="ds-checklist__item" data-done="false">
-          <span data-check aria-hidden="true"></span>
-          <span>Logic Working</span>
-        </li>
-        <li class="ds-checklist__item" data-done="false">
-          <span data-check aria-hidden="true"></span>
-          <span>Test Passed</span>
-        </li>
-        <li class="ds-checklist__item" data-done="false">
-          <span data-check aria-hidden="true"></span>
-          <span>Deployed</span>
-        </li>
+      <ul class="ds-nav__links">
+        <li><a href="/dashboard" class="ds-nav__link" data-link>Dashboard</a></li>
+        <li><a href="/saved" class="ds-nav__link" data-link>Saved</a></li>
+        <li><a href="/digest" class="ds-nav__link" data-link>Digest</a></li>
+        <li><a href="/settings" class="ds-nav__link" data-link>Settings</a></li>
+        <li><a href="/proof" class="ds-nav__link" data-link>Proof</a></li>
       </ul>
-    </footer>
+
+      <button type="button" class="ds-nav__menu-btn" aria-label="Open menu" aria-expanded="false" aria-controls="nav-dropdown" id="nav-menu-btn">
+        <svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true">
+          <path d="M2 5h16M2 10h16M2 15h16"/>
+        </svg>
+      </button>
+
+      <div class="ds-nav__dropdown" id="nav-dropdown" aria-hidden="true">
+        <a href="/dashboard" class="ds-nav__link" data-link>Dashboard</a>
+        <a href="/saved" class="ds-nav__link" data-link>Saved</a>
+        <a href="/digest" class="ds-nav__link" data-link>Digest</a>
+        <a href="/settings" class="ds-nav__link" data-link>Settings</a>
+        <a href="/proof" class="ds-nav__link" data-link>Proof</a>
+      </div>
+    </nav>
+
+    <main id="app" class="ds-route" role="main"></main>
   </div>
 
-  <script src="design-system.js"></script>
+  <script src="app.js"></script>
 </body>
 </html>
