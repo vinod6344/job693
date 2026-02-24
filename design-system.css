@@ -611,3 +611,195 @@ body {
   margin: 0;
   accent-color: var(--color-accent);
 }
+
+/* ========== FILTER BAR ========== */
+.ds-filter {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+  align-items: flex-end;
+  margin-bottom: var(--space-4);
+  padding-bottom: var(--space-3);
+  border-bottom: var(--border);
+}
+
+.ds-filter__group {
+  flex: 1;
+  min-width: 120px;
+  max-width: 200px;
+}
+
+.ds-filter__group--search {
+  min-width: 180px;
+  max-width: 280px;
+}
+
+.ds-filter .ds-label {
+  margin-bottom: var(--space-1);
+}
+
+/* ========== JOB CARDS ========== */
+.ds-jobs {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+.ds-job-card {
+  background: var(--color-bg);
+  border: var(--border);
+  border-radius: var(--radius);
+  padding: var(--space-3);
+  transition: border-color var(--transition);
+}
+
+.ds-job-card__title {
+  font-family: var(--font-serif);
+  font-size: 1.25rem;
+  font-weight: 600;
+  margin: 0 0 var(--space-1) 0;
+}
+
+.ds-job-card__company {
+  font-size: var(--text-size-body);
+  margin: 0 0 var(--space-2) 0;
+  opacity: 0.9;
+}
+
+.ds-job-card__meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+  margin-bottom: var(--space-2);
+  font-size: var(--text-size-small);
+  opacity: 0.85;
+}
+
+.ds-job-card__salary {
+  font-size: var(--text-size-small);
+  margin-bottom: var(--space-2);
+}
+
+.ds-job-card__footer {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+  align-items: center;
+  margin-top: var(--space-2);
+  padding-top: var(--space-2);
+  border-top: var(--border);
+}
+
+.ds-job-card__source {
+  display: inline-block;
+  padding: var(--space-1) var(--space-2);
+  font-size: var(--text-size-caption);
+  font-weight: 500;
+  border: var(--border);
+  border-radius: var(--radius);
+  background: var(--color-bg);
+}
+
+.ds-job-card__posted {
+  font-size: var(--text-size-caption);
+  opacity: 0.75;
+}
+
+.ds-job-card__actions {
+  margin-left: auto;
+  display: flex;
+  gap: var(--space-2);
+}
+
+/* ========== MODAL ========== */
+.ds-modal-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(17, 17, 17, 0.4);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--space-4);
+  z-index: 1000;
+  transition: opacity var(--transition);
+}
+
+.ds-modal {
+  background: var(--color-bg);
+  border: var(--border);
+  border-radius: var(--radius);
+  max-width: 640px;
+  width: 100%;
+  max-height: 90vh;
+  overflow: auto;
+  padding: var(--space-4);
+}
+
+.ds-modal__title {
+  font-family: var(--font-serif);
+  font-size: 1.5rem;
+  font-weight: 600;
+  margin: 0 0 var(--space-1) 0;
+}
+
+.ds-modal__company {
+  font-size: var(--text-size-body);
+  margin: 0 0 var(--space-3) 0;
+  opacity: 0.9;
+}
+
+.ds-modal__section {
+  margin-bottom: var(--space-3);
+}
+
+.ds-modal__section-title {
+  font-size: var(--text-size-small);
+  font-weight: 600;
+  margin: 0 0 var(--space-1) 0;
+  opacity: 0.9;
+}
+
+.ds-modal__description {
+  font-size: var(--text-size-body);
+  line-height: var(--line-height-body);
+  margin: 0 0 var(--space-2) 0;
+}
+
+.ds-modal__skills {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-1);
+  margin: 0;
+}
+
+.ds-modal__skill {
+  padding: var(--space-1) var(--space-2);
+  font-size: var(--text-size-small);
+  border: var(--border);
+  border-radius: var(--radius);
+  background: var(--color-bg);
+}
+
+.ds-modal__actions {
+  display: flex;
+  gap: var(--space-2);
+  margin-top: var(--space-3);
+  padding-top: var(--space-3);
+  border-top: var(--border);
+}
+
+/* ========== NO RESULTS ========== */
+.ds-no-results {
+  padding: var(--space-5) var(--space-4);
+  text-align: center;
+  border: var(--border);
+  border-radius: var(--radius);
+  background: var(--color-bg);
+}
+
+.ds-no-results__text {
+  font-family: var(--font-serif);
+  font-size: 1.25rem;
+  font-weight: 600;
+  margin: 0;
+}
